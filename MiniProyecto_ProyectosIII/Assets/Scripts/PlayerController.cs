@@ -4,7 +4,7 @@ using Unity.Cinemachine; // Asegúrate de incluir el espacio de nombres de Cinema
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 3f;
+    public float speed = 5f;
     public float gravity = -9.8f;
     public float jumpSpeed = 15f;
     public float rotationSpeed = 100f; // Velocidad de rotación vertical
@@ -22,10 +22,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundOffset;
 
     public CinemachineCamera virtualCamera; // Variable pública para la cámara virtual
+    private Animator characterAnimator;
 
     void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        characterAnimator = GetComponent<Animator>();
         Cursor.lockState = CursorLockMode.Locked; // Bloquea el cursor al centro de la pantalla
     }
 
@@ -39,6 +41,9 @@ public class PlayerController : MonoBehaviour
     {
         hInput = Input.GetAxis("Horizontal");
         vInput = Input.GetAxis("Vertical");
+
+
+        float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? speed * 1.5f : speed; // Aumenta la velocidad al presionar Shift
 
         if (IsGrounded())
         {
@@ -63,16 +68,29 @@ public class PlayerController : MonoBehaviour
                 Vector3 forward = new Vector3(cam.forward.x, 0, cam.forward.z).normalized;
                 Vector3 right = new Vector3(cam.right.x, 0, cam.right.z).normalized;
 
-                moveDirection = (forward * vInput + right * hInput).normalized * speed;
+                moveDirection = (forward * vInput + right * hInput).normalized * currentSpeed;
+                if (moveDirection == Vector3.zero)
+                {
+                    characterAnimator.SetFloat("speed", 0);
+                }
+                else
+                {
+                    characterAnimator.SetFloat("speed", 1f);
+
+                }
+
+                if (Input.GetButtonDown("Jump"))
+                {
+                    velocity.y = jumpSpeed;
+                }
             }
 
-            if (Input.GetButtonDown("Jump"))
-            {
-                velocity.y = jumpSpeed;
-            }
+            characterController.Move((moveDirection + velocity) * Time.deltaTime);
+
+            // Verificar si el jugador se está moviendo y actualizar la animación
+
         }
 
-        characterController.Move((moveDirection + velocity) * Time.deltaTime);
     }
 
     void ApplyGravity()
