@@ -69,15 +69,7 @@ public class PlayerController : MonoBehaviour
                 Vector3 right = new Vector3(cam.right.x, 0, cam.right.z).normalized;
 
                 moveDirection = (forward * vInput + right * hInput).normalized * currentSpeed;
-                if (moveDirection == Vector3.zero)
-                {
-                    characterAnimator.SetFloat("speed", 0);
-                }
-                else
-                {
-                    characterAnimator.SetFloat("speed", 1f);
-
-                }
+                CharacterAnimations();
 
                 if (Input.GetButtonDown("Jump"))
                 {
@@ -91,6 +83,47 @@ public class PlayerController : MonoBehaviour
 
         }
 
+    }
+    void CharacterAnimations()
+    {
+        if (moveDirection == Vector3.zero)
+        {
+
+            characterAnimator.SetFloat("speed", 0f);
+
+            if (Input.GetKey(KeyCode.Mouse1)) // Click derecho del mouse
+            {
+                characterAnimator.SetBool("isAiming", true);
+            }
+            else
+            {
+                characterAnimator.SetBool("isAiming", false);
+            }
+        }
+        else if (Input.GetKey(KeyCode.LeftShift))
+        {
+            characterAnimator.SetFloat("speed", 2f);
+            if (Input.GetKey(KeyCode.Mouse1)) // Click derecho del mouse
+            {
+                characterAnimator.SetBool("isAiming", true);
+            }
+            else
+            {
+                characterAnimator.SetBool("isAiming", false);
+            }
+        }
+        else
+        {
+            if (Input.GetKey(KeyCode.Mouse1)) // Click derecho del mouse
+            {
+                characterAnimator.SetBool("isAiming", true);
+            }
+            else
+            {
+                characterAnimator.SetBool("isAiming", false);
+            }
+            characterAnimator.SetFloat("speed", 1f);
+        }
     }
 
     void ApplyGravity()
