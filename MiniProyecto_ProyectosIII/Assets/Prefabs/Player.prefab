@@ -3764,10 +3764,9 @@ MonoBehaviour:
   jumpHeight: 1
   gravityValue: -9.81
   rotationSpeed: 50
-  bulletPrefab: {fileID: 3818741526421490495, guid: e4c5bb510298ef1449cabfc6cb81d2ea, type: 3}
+  bulletPrefab: {fileID: 1184341521618008134, guid: fece8b7eb27027c479bcfd180f9e0c8b, type: 3}
   barrelTransform: {fileID: 3428722357319767381}
   bulletParent: {fileID: 0}
-  bulletHitMissDistance: 25
 --- !u!95 &8505030208865051572
 Animator:
   serializedVersion: 7
