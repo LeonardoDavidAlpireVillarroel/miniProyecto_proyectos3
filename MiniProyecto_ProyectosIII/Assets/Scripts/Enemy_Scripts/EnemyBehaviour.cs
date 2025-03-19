@@ -3,52 +3,48 @@ using UnityEngine;
 public class EnemyBehaviour : MonoBehaviour
 {
     [SerializeField] private float enemySpeed = 2f;
-    [SerializeField] private float chaseSpeed = 9f;
-    [SerializeField] private float detectionRange = 10f;
-    [SerializeField] private float attackRange = 3f;
+    [SerializeField] private float chaseSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
+    [SerializeField] private float viewRadius;
+    [SerializeField] private float viewAngle;
+    [SerializeField] private float hearRadius;
+    [SerializeField] private float attackRange;
+
+    [SerializeField] private LayerMask targetPlayer;
+    [SerializeField] private LayerMask obstacleMask;
+
+    [SerializeField] private GameObject player;
 
     private Animator enemyAnimator;
-    private GameObject player;
     private int patrolState;
     private float patrolTimer;
     private Quaternion targetRotation;
-    private bool isAttacking;
+    private bool isChasing = false;
+    private bool isAttacking = false;
 
     void Start()
     {
         enemyAnimator = GetComponent<Animator>();
-        player = GameObject.FindWithTag("Player");
     }
 
     void Update()
     {
-        HandleMovement();
-    }
+        if (isAttacking)
+            return; // No hacer nada si está atacando
 
-    private void HandleMovement()
-    {
-        if (player == null) return;
-
-        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-
-        if (distanceToPlayer > detectionRange)
-        {
-            Patrol();
-        }
-        else if (distanceToPlayer > attackRange && !isAttacking)
+        if (isChasing)
         {
             ChasePlayer();
         }
         else
         {
-            AttackPlayer();
+            Patrol();
+            DetectPlayer();
         }
     }
 
     private void Patrol()
     {
-        enemyAnimator.SetBool("isChasing", false);
         patrolTimer += Time.deltaTime;
 
         if (patrolTimer >= 2f)
@@ -74,30 +70,86 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
+    private void DetectPlayer()
+    {
+        if (PlayerViewDetection() || PlayerHearDetection())
+        {
+            isChasing = true;
+            enemyAnimator.SetBool("isChasing", true);
+            enemyAnimator.SetBool("isPatrolling", false);
+        }
+    }
+
+    private bool PlayerViewDetection()
+    {
+        Vector3 playerTarget = (player.transform.position - transform.position).normalized;
+        float distanceToTarget = Vector3.Distance(transform.position, player.transform.position);
+
+        if (Vector3.Angle(transform.forward, playerTarget) < viewAngle / 2)
+        {
+            if (distanceToTarget <= viewRadius)
+            {
+                if (!Physics.Raycast(transform.position, playerTarget, distanceToTarget, obstacleMask))
+                {
+                    Debug.Log("Te vi");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private bool PlayerHearDetection()
+    {
+        float distanceToTarget = Vector3.Distance(transform.position, player.transform.position);
+
+        if (distanceToTarget <= hearRadius)
+        {
+            Debug.Log("Te oí");
+            return true;
+        }
+
+        return false;
+    }
+
     private void ChasePlayer()
     {
-        Vector3 direction = player.transform.position - transform.position;
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+
+        if (distanceToPlayer <= attackRange)
+        {
+            AttackPlayer();
+            return;
+        }
+
+        Vector3 direction = (player.transform.position - transform.position).normalized;
         direction.y = 0;
 
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), rotationSpeed);
-        transform.Translate(Vector3.forward * chaseSpeed * Time.deltaTime);
+        Quaternion lookRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+        transform.position += direction * chaseSpeed * Time.deltaTime;
 
-        enemyAnimator.SetBool("isPatrolling", false);
-        enemyAnimator.SetBool("isChasing", true);
         enemyAnimator.SetBool("isAttacking", false);
     }
 
     private void AttackPlayer()
     {
-        enemyAnimator.SetBool("isPatrolling", false);
+        isAttacking = true;
         enemyAnimator.SetBool("isChasing", false);
         enemyAnimator.SetBool("isAttacking", true);
-        isAttacking = true;
     }
 
     public void ResetAttack()
     {
         enemyAnimator.SetBool("isAttacking", false);
         isAttacking = false;
+
+        // Verificar si el jugador sigue cerca, si no, volver a perseguir
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        if (distanceToPlayer > attackRange)
+        {
+            isChasing = true;
+            enemyAnimator.SetBool("isChasing", true);
+        }
     }
 }
