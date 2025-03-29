@@ -840,6 +840,14 @@ PrefabInstance:
       propertyPath: Target.TrackingTarget
       value: 
       objectReference: {fileID: 1670769806}
+    - target: {fileID: 7322154677358479339, guid: 2fbd92553f9fc7844bae88d8a0568fa7, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[0].Input.Gain
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7322154677358479339, guid: 2fbd92553f9fc7844bae88d8a0568fa7, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.Gain
+      value: -3
+      objectReference: {fileID: 0}
     - target: {fileID: 9054009948456936869, guid: 2fbd92553f9fc7844bae88d8a0568fa7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.27
@@ -2502,6 +2510,10 @@ PrefabInstance:
       propertyPath: bulletPrefab
       value: 
       objectReference: {fileID: 1184341521618008134, guid: fece8b7eb27027c479bcfd180f9e0c8b, type: 3}
+    - target: {fileID: 1238723355593780365, guid: 3be2f66800a7cf9459367b17bb84268e, type: 3}
+      propertyPath: rotationSpeed
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 1238723355593780365, guid: 3be2f66800a7cf9459367b17bb84268e, type: 3}
       propertyPath: cameraTransform
       value: 
@@ -4620,7 +4632,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3490026887102541896, guid: e33650d17df82254f85dadb65d3f007f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.78
+      value: -2.16
       objectReference: {fileID: 0}
     - target: {fileID: 3490026887102541896, guid: e33650d17df82254f85dadb65d3f007f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4628,11 +4640,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3490026887102541896, guid: e33650d17df82254f85dadb65d3f007f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 38.51
+      value: 38.05
       objectReference: {fileID: 0}
     - target: {fileID: 3490026887102541896, guid: e33650d17df82254f85dadb65d3f007f, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.05856832
+      value: 0.8362587
       objectReference: {fileID: 0}
     - target: {fileID: 3490026887102541896, guid: e33650d17df82254f85dadb65d3f007f, type: 3}
       propertyPath: m_LocalRotation.x
@@ -4640,7 +4652,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3490026887102541896, guid: e33650d17df82254f85dadb65d3f007f, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.9982834
+      value: 0.5483351
       objectReference: {fileID: 0}
     - target: {fileID: 3490026887102541896, guid: e33650d17df82254f85dadb65d3f007f, type: 3}
       propertyPath: m_LocalRotation.z
@@ -4652,7 +4664,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3490026887102541896, guid: e33650d17df82254f85dadb65d3f007f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 173.285
+      value: 66.506
       objectReference: {fileID: 0}
     - target: {fileID: 3490026887102541896, guid: e33650d17df82254f85dadb65d3f007f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -4911,6 +4923,14 @@ PrefabInstance:
       propertyPath: Target.TrackingTarget
       value: 
       objectReference: {fileID: 1670769806}
+    - target: {fileID: 7322154677358479339, guid: 2fbd92553f9fc7844bae88d8a0568fa7, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[0].Input.Gain
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7322154677358479339, guid: 2fbd92553f9fc7844bae88d8a0568fa7, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.Gain
+      value: -3
+      objectReference: {fileID: 0}
     - target: {fileID: 9054009948456936869, guid: 2fbd92553f9fc7844bae88d8a0568fa7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.27

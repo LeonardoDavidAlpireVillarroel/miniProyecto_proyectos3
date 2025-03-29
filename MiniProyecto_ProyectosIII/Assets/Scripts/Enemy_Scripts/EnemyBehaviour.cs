@@ -133,6 +133,7 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private Transform player;
     [SerializeField] private ParticleSystem explosionParticle;
+    [SerializeField] private int enemyLife = 3;
 
     private Animator enemyAnimator;
     private NavMeshAgent agent;
@@ -216,6 +217,20 @@ public class EnemyBehaviour : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             Destroy(gameObject);
+        }
+        else if (other.gameObject.CompareTag("Bullet"))
+        {
+            enemyLife--;
+
+            // Al recibir un disparo, el enemigo comienza a perseguir al jugador
+            isChasing = true;
+            enemyAnimator.SetBool("isChasing", true);
+
+            if (enemyLife == 0)
+            {
+                Instantiate(explosionParticle, transform.position + Vector3.up * 3f, Quaternion.identity);
+                Destroy(gameObject);
+            }
         }
     }
 }
