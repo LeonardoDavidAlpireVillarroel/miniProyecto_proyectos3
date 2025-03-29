@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33800734877906016}
   - component: {fileID: 23110209403684014}
   - component: {fileID: 64957734664660074}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CeilingLampA
   m_TagString: Untagged
   m_Icon: {fileID: 0}

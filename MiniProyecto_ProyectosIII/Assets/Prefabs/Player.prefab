@@ -3767,6 +3767,13 @@ MonoBehaviour:
   bulletPrefab: {fileID: 1184341521618008134, guid: fece8b7eb27027c479bcfd180f9e0c8b, type: 3}
   barrelTransform: {fileID: 3428722357319767381}
   bulletParent: {fileID: 0}
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  explosionParticle: {fileID: 6596716047862667720, guid: 8b1971fee846afd40a871bc0c63cd23e, type: 3}
+  currentWeapon: 0
+  gun: {fileID: 0}
+  rifle: {fileID: 0}
 --- !u!95 &8505030208865051572
 Animator:
   serializedVersion: 7

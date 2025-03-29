@@ -244,6 +244,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform barrelTransform;
     [SerializeField] private Transform bulletParent;
     [SerializeField] private LayerMask collisionLayers;
+    [SerializeField] private ParticleSystem explosionParticle;
+
 
     private CharacterController controller;
     private PlayerInput playerInput;
@@ -382,6 +384,13 @@ public class PlayerController : MonoBehaviour
             characterAnimator.SetBool("isAiming", false);
             characterAnimator.SetFloat("rifleSpeed", movementSpeed);
             characterAnimator.SetBool("rifleAiming", isAiming);
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            Instantiate(explosionParticle, transform.position, Quaternion.identity);
         }
     }
 }

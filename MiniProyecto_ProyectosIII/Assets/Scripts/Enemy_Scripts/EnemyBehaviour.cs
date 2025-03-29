@@ -215,13 +215,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            ExplosionAndDestroy();
+            Destroy(gameObject);
         }
-    }
-    private void ExplosionAndDestroy()
-    {
-        Instantiate(explosionParticle, transform.position + Vector3.up * 2.5f, Quaternion.identity);
-        Destroy(gameObject);
-
     }
 }

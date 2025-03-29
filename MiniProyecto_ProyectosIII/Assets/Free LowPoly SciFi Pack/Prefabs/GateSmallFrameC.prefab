@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33337678728437630}
   - component: {fileID: 23807964469081418}
   - component: {fileID: 64281622261451828}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: GateSmallFrameC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
