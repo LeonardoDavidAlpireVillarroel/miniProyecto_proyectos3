@@ -324,11 +324,38 @@ public class PlayerController : MonoBehaviour
         bullet.transform.rotation = Quaternion.LookRotation(shootDirection);
     }
 
+    //private Vector3 GetShootDirection()
+    //{
+    //    if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, Mathf.Infinity, collisionLayers))
+    //        return (hit.point - barrelTransform.position).normalized;
+    //    return cameraTransform.forward;
+    //}
     private Vector3 GetShootDirection()
     {
-        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, Mathf.Infinity, collisionLayers))
-            return (hit.point - barrelTransform.position).normalized;
-        return cameraTransform.forward;
+        RaycastHit hit;
+        Vector3 shootDirection;
+
+        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity, collisionLayers))
+        {
+            // Verifica si el punto de impacto está detrás del barril del arma
+            Vector3 hitDirection = (hit.point - barrelTransform.position).normalized;
+            float dotProduct = Vector3.Dot(hitDirection, cameraTransform.forward);
+
+            if (dotProduct > 0) // Solo usa el punto si está al frente del jugador
+            {
+                shootDirection = hitDirection;
+            }
+            else
+            {
+                shootDirection = cameraTransform.forward; // Usa la dirección de la cámara si el punto es erróneo
+            }
+        }
+        else
+        {
+            shootDirection = cameraTransform.forward; // Si no hay impacto, usa la dirección de la cámara
+        }
+
+        return shootDirection;
     }
 
     private void UpdateCharacterAnimations(Vector3 move, Vector2 input)
