@@ -17,10 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask collisionLayers;
     [SerializeField] private ParticleSystem explosionParticle;
 
-    [Header("Camera Settings")]
-    [SerializeField] private float mouseSensitivity = 100f;
-    private float xRotation = 0f;
-
+    [SerializeField] Healthbar _healthbar;
 
     private CharacterController controller;
     private PlayerInput playerInput;
@@ -168,9 +165,11 @@ public class PlayerController : MonoBehaviour
     private void PlayerTakeDmg(int dmg)
     {
         GameManager.gameManager._playerHealth.DmgUnit(dmg);
+        _healthbar.SetHealth(GameManager.gameManager._playerHealth.Health);
     }
     private void PlayerHeal(int healing)
     {
         GameManager.gameManager._playerHealth.HealUnit(healing);
+        _healthbar.SetHealth(GameManager.gameManager._playerHealth.Health);
     }
 }
