@@ -101,12 +101,6 @@ public class PlayerController : MonoBehaviour
         bullet.transform.rotation = Quaternion.LookRotation(shootDirection);
     }
 
-    //private Vector3 GetShootDirection()
-    //{
-    //    if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, Mathf.Infinity, collisionLayers))
-    //        return (hit.point - barrelTransform.position).normalized;
-    //    return cameraTransform.forward;
-    //}
     private Vector3 GetShootDirection()
     {
         RaycastHit hit;
@@ -165,7 +159,18 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Enemy"))
         {
+            PlayerTakeDmg(25);
             Instantiate(explosionParticle, transform.position, Quaternion.identity);
+            Debug.Log(GameManager.gameManager._playerHealth.Health);
         }
+    }
+
+    private void PlayerTakeDmg(int dmg)
+    {
+        GameManager.gameManager._playerHealth.DmgUnit(dmg);
+    }
+    private void PlayerHeal(int healing)
+    {
+        GameManager.gameManager._playerHealth.HealUnit(healing);
     }
 }

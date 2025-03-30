@@ -1,126 +1,4 @@
-﻿//using UnityEngine;
-//using UnityEngine.AI;
-
-//public class EnemyBehaviour : MonoBehaviour
-//{
-//    [SerializeField] private float chaseSpeed = 5f;
-//    [SerializeField] private float rotationSpeed = 5f;
-//    [SerializeField] private float viewRadius;
-//    [SerializeField] private float viewAngle;
-//    [SerializeField] private float hearRadius;
-//    [SerializeField] private float attackRange;
-
-//    [SerializeField] private LayerMask targetPlayer;
-//    [SerializeField] private LayerMask obstacleMask;
-//    [SerializeField] private GameObject player;
-
-//    private Animator enemyAnimator;
-//    private bool isChasing = false;
-//    private bool isAttacking = false;
-//    private NavMeshAgent agent;
-
-//    void Start()
-//    {
-//        enemyAnimator = GetComponent<Animator>();
-//        agent = GetComponent<NavMeshAgent>();
-//        agent.speed = chaseSpeed;
-//    }
-
-//    void Update()
-//    {
-//        if (isAttacking)
-//        {
-//            CheckAttackDistance(); // Verifica si debe seguir atacando
-//        }
-//        else if (isChasing)
-//        {
-//            ChasePlayer();
-//        }
-//        else
-//        {
-//            DetectPlayer();
-//        }
-//    }
-
-//    private void DetectPlayer()
-//    {
-//        if (PlayerViewDetection() || PlayerHearDetection())
-//        {
-//            isChasing = true;
-//            enemyAnimator.SetBool("isChasing", true);
-//            agent.SetDestination(player.transform.position);
-//        }
-//    }
-
-//    private bool PlayerViewDetection()
-//    {
-//        Vector3 origin = transform.position + Vector3.up * 1.5f;
-//        Vector3 direction = (player.transform.position - origin).normalized;
-//        float distanceToTarget = Vector3.Distance(origin, player.transform.position);
-
-//        if (Vector3.Angle(transform.forward, direction) < viewAngle / 2)
-//        {
-//            if (distanceToTarget <= viewRadius)
-//            {
-//                if (!Physics.Raycast(origin, direction, distanceToTarget, obstacleMask))
-//                {
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
-//    private bool PlayerHearDetection()
-//    {
-//        float distanceToTarget = Vector3.Distance(transform.position, player.transform.position);
-//        return distanceToTarget <= hearRadius;
-//    }
-
-//    private void ChasePlayer()
-//    {
-//        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-
-//        if (distanceToPlayer <= attackRange)
-//        {
-//            StartAttack();
-//        }
-//        else
-//        {
-//            agent.SetDestination(player.transform.position);
-//        }
-//    }
-
-//    private void StartAttack()
-//    {
-//        isAttacking = true;
-//        isChasing = false;
-//        agent.isStopped = true;
-//        enemyAnimator.SetBool("isChasing", false);
-//        enemyAnimator.SetBool("isAttacking", true);
-//    }
-
-//    private void CheckAttackDistance()
-//    {
-//        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-
-//        if (distanceToPlayer > attackRange)
-//        {
-//            StopAttack(); // El jugador se alejó, vuelve a perseguirlo
-//        }
-//    }
-
-//    private void StopAttack()
-//    {
-//        isAttacking = false;
-//        isChasing = true;
-//        agent.isStopped = false;
-//        enemyAnimator.SetBool("isAttacking", false);
-//        enemyAnimator.SetBool("isChasing", true);
-//    }
-//}
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyBehaviour : MonoBehaviour
@@ -133,7 +11,8 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private Transform player;
     [SerializeField] private ParticleSystem explosionParticle;
-    [SerializeField] private int enemyLife = 3;
+    public UnitHealth _enemyHealth = new UnitHealth(100, 100);
+
 
     private Animator enemyAnimator;
     private NavMeshAgent agent;
@@ -220,17 +99,23 @@ public class EnemyBehaviour : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Bullet"))
         {
-            enemyLife--;
+            EnemyTakeDmg(25);
+            Debug.Log(_enemyHealth.Health);
 
             // Al recibir un disparo, el enemigo comienza a perseguir al jugador
             isChasing = true;
             enemyAnimator.SetBool("isChasing", true);
 
-            if (enemyLife == 0)
+            if (_enemyHealth.Health == 0)
             {
                 Instantiate(explosionParticle, transform.position + Vector3.up * 3f, Quaternion.identity);
                 Destroy(gameObject);
             }
         }
+    }
+    private void EnemyTakeDmg(int dmg)
+    {
+        _enemyHealth.DmgUnit(dmg);
+
     }
 }
