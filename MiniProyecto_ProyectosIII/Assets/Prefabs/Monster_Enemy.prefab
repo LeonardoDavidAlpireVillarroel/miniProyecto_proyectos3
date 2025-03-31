@@ -1836,7 +1836,7 @@ MonoBehaviour:
     m_Bits: 128
   player: {fileID: 0}
   explosionParticle: {fileID: 6596716047862667720, guid: 8b1971fee846afd40a871bc0c63cd23e, type: 3}
-  explosionPoint: {fileID: 6748022845608262682}
+  ammoDroped: {fileID: 4262361759871580734, guid: d0015bc76ac2bd7429919027aaede227, type: 3}
 --- !u!54 &8054039357036750515
 Rigidbody:
   m_ObjectHideFlags: 0
