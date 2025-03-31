@@ -11,6 +11,7 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private Transform player;
     [SerializeField] private ParticleSystem explosionParticle;
+
     public UnitHealth _enemyHealth = new UnitHealth(100, 100);
 
 
@@ -108,7 +109,9 @@ public class EnemyBehaviour : MonoBehaviour
 
             if (_enemyHealth.Health == 0)
             {
-                Instantiate(explosionParticle, transform.position + Vector3.up * 3f, Quaternion.identity);
+                Vector3 explosionPos = transform.position;
+                explosionPos.y = Mathf.Max(explosionPos.y, 1.5f); // Asegurar que no baje más allá de un punto
+                Instantiate(explosionParticle, explosionPos, Quaternion.identity);
                 Destroy(gameObject);
             }
         }
