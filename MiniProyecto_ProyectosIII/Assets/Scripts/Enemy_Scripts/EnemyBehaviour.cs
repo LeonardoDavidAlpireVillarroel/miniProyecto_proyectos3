@@ -19,6 +19,7 @@ public class EnemyBehaviour : MonoBehaviour
     private Animator enemyAnimator;
     private NavMeshAgent agent;
     private bool isChasing = false;
+    private GameManager gameManager;
 
     void Start()
     {
@@ -26,6 +27,20 @@ public class EnemyBehaviour : MonoBehaviour
         enemyAnimator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         agent.speed = chaseSpeed;
+        // Inicialización de componentes
+        enemyAnimator = GetComponent<Animator>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = chaseSpeed;
+
+        // Obtener la referencia al GameManager
+        if (GameManager.gameManager != null)
+        {
+            gameManager = GameManager.gameManager;
+        }
+        else
+        {
+            Debug.LogError("GameManager no está asignado en la escena.");
+        }
     }
 
     void Update()
@@ -109,6 +124,7 @@ public class EnemyBehaviour : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             Destroy(gameObject); // El enemigo muere al colisionar con el jugador
+            gameManager.RemoveEnemy(gameObject);
         }
         else if (other.gameObject.CompareTag("Bullet"))
         {
@@ -128,6 +144,7 @@ public class EnemyBehaviour : MonoBehaviour
                 Instantiate(explosionParticle, explosionPos, Quaternion.identity); // Explosión
                 Instantiate(ammoDroped, explosionPos, Quaternion.identity); // Munición caída
                 Destroy(gameObject); // Destruye el enemigo
+                gameManager.RemoveEnemy(gameObject);
             }
         }
     }

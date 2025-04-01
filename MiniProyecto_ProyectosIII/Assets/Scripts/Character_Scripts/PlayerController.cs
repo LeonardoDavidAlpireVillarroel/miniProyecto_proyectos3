@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject rifle;
     [SerializeField] private int currentWeapon = 0; // 0 = Pistola, 1 = Rifle
 
+
     private CharacterController controller;
     private PlayerInput playerInput;
     private Animator characterAnimator;
