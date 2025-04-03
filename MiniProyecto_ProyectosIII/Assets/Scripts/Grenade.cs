@@ -56,7 +56,7 @@ public class Grenade : MonoBehaviour
         }
 
         // Destruir la granada después de un pequeño retraso
-        //Destroy(gameObject, 0.5f);
+        Destroy(gameObject, 10f);
     }
 
     private IEnumerator ReactivateEnemy(NavMeshAgent agent, Rigidbody rb, float delay)

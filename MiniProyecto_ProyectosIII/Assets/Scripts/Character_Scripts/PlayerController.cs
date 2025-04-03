@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using System;
 
 [RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
 public class PlayerController : MonoBehaviour
@@ -13,7 +14,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Shooting Settings")]
     [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private Transform barrelTransform;
+    [SerializeField] public Transform barrelTransform;
     [SerializeField] private Transform bulletParent;
     [SerializeField] private LayerMask collisionLayers;
     [SerializeField] private ParticleSystem explosionParticle;
@@ -34,13 +35,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject grenadePrefab;
 
     [Header("Grenade Settings")]
-    [SerializeField] private int maxGrenades = 1; // Maximo de granadas que el jugador puede tener
+    [SerializeField] private int maxGrenades = 1; // Máximo de granadas que el jugador puede tener
     private int currentGrenades; // Granadas actuales
-    [SerializeField] private TextMeshProUGUI grenadeText; // Referencia al UI de las granadas
+    [SerializeField] private TextMeshProUGUI grenadeText; // UI de las granadas
+    [SerializeField] private TextMeshProUGUI grenadeCooldownText; // UI del temporizador de recarga
 
-    private float grenadeCooldown = 5f; // Tiempo de recarga en segundos (2 minutos)
+    private float grenadeCooldown = 60f; // Tiempo de recarga en segundos
     private float currentCooldown; // Temporizador para la recarga de las granadas
-    private bool isCooldownActive = false; // Verificar si el temporizador de recarga está activo
+    private bool isCooldownActive = false;
 
 
     private CharacterController controller;
@@ -78,21 +80,50 @@ public class PlayerController : MonoBehaviour
 
         currentCooldown = grenadeCooldown;
         isCooldownActive = false;
+
+        grenadeCooldownText.gameObject.SetActive(false);
     }
 
     private void OnEnable()
     {
         // Event subscriptions for shooting
-        shootAction.performed += _ => StartShooting();
-        shootAction.canceled += _ => StopShooting();
+        shootAction.performed += StartShooting;
+        shootAction.canceled += StopShooting;
     }
 
     private void OnDisable()
     {
         // Event unsubscriptions for shooting
-        shootAction.performed -= _ => StartShooting();
-        shootAction.canceled -= _ => StopShooting();
+        shootAction.performed -= StartShooting;
+        shootAction.canceled -= StopShooting;
     }
+
+    // Corrección: Métodos deben aceptar 'InputAction.CallbackContext' como parámetro y ser 'void'
+    private void StartShooting(InputAction.CallbackContext context)
+    {
+        if (currentWeapon == 0) // Pistola
+        {
+            ShootSingleShot();
+        }
+        else if (currentWeapon == 1 && Input.GetKey(KeyCode.Mouse1) && currentRifleAmmo > 0) // Rifle
+        {
+            if (!isShooting)
+            {
+                isShooting = true;
+                InvokeRepeating(nameof(ShootSingleShot), 0f, 0.1f);
+            }
+        }
+    }
+
+    private void StopShooting(InputAction.CallbackContext context)
+    {
+        if (currentWeapon == 1)
+        {
+            isShooting = false;
+            CancelInvoke(nameof(ShootSingleShot));
+        }
+    }
+
 
     private void Update()
     {
@@ -102,23 +133,34 @@ public class PlayerController : MonoBehaviour
         HandleWeaponSwitch();
         ThrowGrenade();
 
-        // Si el temporizador está activo, descontamos tiempo
+        // Lógica de recarga de granadas con temporizador visible
         if (isCooldownActive)
         {
             currentCooldown -= Time.deltaTime;
+
+            // Mostrar el temporizador en la UI
+            grenadeCooldownText.text = $"Recarga: {Mathf.Ceil(currentCooldown)}s";
+
             if (currentCooldown <= 0f)
             {
                 currentCooldown = grenadeCooldown;
+
                 // Recargar granadas de una en una
                 if (currentGrenades < maxGrenades)
                 {
-                    currentGrenades++; // Recargar una granada
-                    UpdateGrenadeUI(); // Actualizar UI
+                    currentGrenades++;
+                    UpdateGrenadeUI();
                 }
 
                 if (currentGrenades == maxGrenades)
                 {
-                    isCooldownActive = false; // Desactivar el temporizador si ya se han recargado todas las granadas
+                    isCooldownActive = false; // Desactivar el temporizador si ya están llenas
+                    grenadeCooldownText.gameObject.SetActive(false); // Ocultar el temporizador
+                }
+                else
+                {
+                    // Reiniciar temporizador para la próxima recarga si aún falta recargar más
+                    currentCooldown = grenadeCooldown;
                 }
             }
         }
@@ -159,31 +201,6 @@ public class PlayerController : MonoBehaviour
         UpdateAmmoUI(); // Update UI when switching weapons
     }
 
-    private void StartShooting()
-    {
-        if (currentWeapon == 0) // Pistola
-        {
-            ShootSingleShot();
-        }
-        else if (currentWeapon == 1 && Input.GetKey(KeyCode.Mouse1) && currentRifleAmmo > 0) // Rifle
-        {
-            if (!isShooting)
-            {
-                isShooting = true;
-                InvokeRepeating(nameof(ShootSingleShot), 0f, 0.1f);
-            }
-        }
-    }
-
-    private void StopShooting()
-    {
-        if (currentWeapon == 1)
-        {
-            isShooting = false;
-            CancelInvoke(nameof(ShootSingleShot));
-        }
-    }
-
     private void ShootSingleShot()
     {
         if (!Input.GetKey(KeyCode.Mouse1)) return;
@@ -199,9 +216,16 @@ public class PlayerController : MonoBehaviour
         }
 
         // Instantiate bullet and set its direction
+        if (barrelTransform == null || barrelTransform.gameObject == null)
+        {
+            Debug.LogError("barrelTransform ha sido destruido o no está asignado.");
+            return; // Evita que el código continúe si el objeto ya no existe
+        }
+
         GameObject bullet = Instantiate(bulletPrefab, barrelTransform.position, Quaternion.identity, bulletParent);
         Vector3 shootDirection = GetShootDirection();
         bullet.transform.rotation = Quaternion.LookRotation(shootDirection);
+
     }
 
     public void AddRifleAmmo(int amount)
@@ -266,6 +290,7 @@ public class PlayerController : MonoBehaviour
             Instantiate(explosionParticle, transform.position, Quaternion.identity);
             Debug.Log(GameManager.gameManager._playerHealth.Health);
         }
+
     }
 
     private void PlayerTakeDmg(int dmg)
@@ -308,7 +333,13 @@ public class PlayerController : MonoBehaviour
 
             currentGrenades--; // Decrementar granadas disponibles
             UpdateGrenadeUI(); // Actualizar UI
-            isCooldownActive = true; // Activar el temporizador de recarga
+
+            if (!isCooldownActive)
+            {
+                isCooldownActive = true; // Activar el temporizador de recarga
+                currentCooldown = grenadeCooldown;
+                grenadeCooldownText.gameObject.SetActive(true); // Mostrar el temporizador en la UI
+            }
         }
     }
     private void UpdateGrenadeUI()
