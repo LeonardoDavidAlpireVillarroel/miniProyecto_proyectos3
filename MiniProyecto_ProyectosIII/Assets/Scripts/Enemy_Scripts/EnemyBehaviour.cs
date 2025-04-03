@@ -4,7 +4,7 @@ using UnityEngine.AI;
 public class EnemyBehaviour : MonoBehaviour
 {
     [Header("Enemy Settings")]
-    [SerializeField] private float chaseSpeed = 5f;
+    [SerializeField] public float chaseSpeed = 5f;
     [SerializeField] private float viewRadius = 10f;
     [SerializeField] private float viewAngle = 90f;
     [SerializeField] private float hearRadius = 5f;
@@ -27,10 +27,6 @@ public class EnemyBehaviour : MonoBehaviour
         enemyAnimator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         agent.speed = chaseSpeed;
-        // Inicialización de componentes
-        enemyAnimator = GetComponent<Animator>();
-        agent = GetComponent<NavMeshAgent>();
-        agent.speed = chaseSpeed;
 
         // Obtener la referencia al GameManager
         if (GameManager.gameManager != null)
@@ -46,13 +42,22 @@ public class EnemyBehaviour : MonoBehaviour
     void Update()
     {
         // Comportamiento del enemigo
-        if (!isChasing)
+        if (agent.enabled) // Solo perseguir si el NavMeshAgent está habilitado
         {
-            DetectPlayer();
+            if (!isChasing)
+            {
+                DetectPlayer();
+            }
+            else
+            {
+                ChasePlayer();
+            }
         }
         else
         {
-            ChasePlayer();
+            // Si el NavMeshAgent está deshabilitado, no hacer nada
+            isChasing = false;
+            enemyAnimator.SetBool("isChasing", false);
         }
     }
 
@@ -147,5 +152,15 @@ public class EnemyBehaviour : MonoBehaviour
                 gameManager.RemoveEnemy(gameObject);
             }
         }
+        if (other.CompareTag("Environment"))
+        {
+            // Activar NavMeshAgent cuando colisiona con un objeto "Environment"
+            NavMeshAgent agent = GetComponent<NavMeshAgent>();
+            if (agent != null)
+            {
+                agent.enabled = true;  // Reactivar NavMeshAgent
+            }
+        }
     }
 }
+

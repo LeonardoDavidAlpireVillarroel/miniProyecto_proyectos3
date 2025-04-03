@@ -30,6 +30,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject gun;
     [SerializeField] private GameObject rifle;
     [SerializeField] private int currentWeapon = 0; // 0 = Pistola, 1 = Rifle
+    [SerializeField] private float throwForce = 40f;
+    [SerializeField] GameObject grenadePrefab;
+
+    [Header("Grenade Settings")]
+    [SerializeField] private int maxGrenades = 1; // Maximo de granadas que el jugador puede tener
+    private int currentGrenades; // Granadas actuales
+    [SerializeField] private TextMeshProUGUI grenadeText; // Referencia al UI de las granadas
+
+    private float grenadeCooldown = 5f; // Tiempo de recarga en segundos (2 minutos)
+    private float currentCooldown; // Temporizador para la recarga de las granadas
+    private bool isCooldownActive = false; // Verificar si el temporizador de recarga está activo
 
 
     private CharacterController controller;
@@ -61,6 +72,12 @@ public class PlayerController : MonoBehaviour
         moveAction = playerInput.actions["Move"];
         jumpAction = playerInput.actions["Jump"];
         shootAction = playerInput.actions["Shoot"];
+
+        currentGrenades = maxGrenades;
+        UpdateGrenadeUI();
+
+        currentCooldown = grenadeCooldown;
+        isCooldownActive = false;
     }
 
     private void OnEnable()
@@ -79,10 +96,32 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Handle movement, jumping, and weapon switching
+        // Llamar a los otros métodos de actualización
         HandleMovement();
         HandleJump();
         HandleWeaponSwitch();
+        ThrowGrenade();
+
+        // Si el temporizador está activo, descontamos tiempo
+        if (isCooldownActive)
+        {
+            currentCooldown -= Time.deltaTime;
+            if (currentCooldown <= 0f)
+            {
+                currentCooldown = grenadeCooldown;
+                // Recargar granadas de una en una
+                if (currentGrenades < maxGrenades)
+                {
+                    currentGrenades++; // Recargar una granada
+                    UpdateGrenadeUI(); // Actualizar UI
+                }
+
+                if (currentGrenades == maxGrenades)
+                {
+                    isCooldownActive = false; // Desactivar el temporizador si ya se han recargado todas las granadas
+                }
+            }
+        }
     }
 
     private void HandleMovement()
@@ -258,4 +297,23 @@ public class PlayerController : MonoBehaviour
             ammoText.text = $"{currentRifleAmmo}/{maxRifleAmmo}";
         }
     }
+    private void ThrowGrenade()
+    {
+        if (Input.GetKeyDown(KeyCode.Q) && currentGrenades > 0)
+        {
+            // Lanzar granada
+            GameObject grenade = Instantiate(grenadePrefab, barrelTransform.position, Quaternion.identity, bulletParent);
+            Rigidbody rb = grenade.GetComponent<Rigidbody>();
+            rb.AddForce(transform.forward * throwForce, ForceMode.VelocityChange);
+
+            currentGrenades--; // Decrementar granadas disponibles
+            UpdateGrenadeUI(); // Actualizar UI
+            isCooldownActive = true; // Activar el temporizador de recarga
+        }
+    }
+    private void UpdateGrenadeUI()
+    {
+        grenadeText.text = $"{currentGrenades}/{maxGrenades}"; // Muestra las granadas disponibles en la interfaz
+    }
+
 }
