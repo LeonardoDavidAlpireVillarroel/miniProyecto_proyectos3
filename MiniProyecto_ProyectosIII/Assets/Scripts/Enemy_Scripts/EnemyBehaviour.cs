@@ -133,8 +133,9 @@ public class EnemyBehaviour : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Bullet"))
         {
+
             // El enemigo recibe daño
-            EnemyTakeDmg(25);
+            EnemyTakeDmg(15);
             Debug.Log(_enemyHealth.Health);
 
             // El enemigo comienza a perseguir al jugador después de recibir un disparo
@@ -142,12 +143,14 @@ public class EnemyBehaviour : MonoBehaviour
             enemyAnimator.SetBool("isChasing", true);
 
             // Si el enemigo muere, genera la explosión y la munición
-            if (_enemyHealth.Health == 0)
+            if (_enemyHealth.Health <= 0)
             {
                 Vector3 explosionPos = transform.position;
                 explosionPos.y = Mathf.Max(explosionPos.y, 1.5f); // Asegura que la posición de la explosión sea apropiada
                 Instantiate(explosionParticle, explosionPos, Quaternion.identity); // Explosión
-                Instantiate(ammoDroped, explosionPos, Quaternion.identity); // Munición caída
+                SoundManager.Instance.PlaySound3D("Explosion", transform.position);
+
+                Instantiate(ammoDroped, transform.position+Vector3.up * 0.7f, Quaternion.identity); // Munición caída
                 Destroy(gameObject); // Destruye el enemigo
                 gameManager.RemoveEnemy(gameObject);
             }

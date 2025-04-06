@@ -44,6 +44,12 @@ public class PlayerController : MonoBehaviour
     private float currentCooldown; // Temporizador para la recarga de las granadas
     private bool isCooldownActive = false;
 
+    [Header("UI Derrota")]
+    [SerializeField] private GameObject gameOverPanel;
+
+
+    [SerializeField] private GameObject cameras;
+
 
     private CharacterController controller;
     private PlayerInput playerInput;
@@ -82,6 +88,7 @@ public class PlayerController : MonoBehaviour
         isCooldownActive = false;
 
         grenadeCooldownText.gameObject.SetActive(false);
+        gameOverPanel.SetActive(false);
     }
 
     private void OnEnable()
@@ -101,6 +108,7 @@ public class PlayerController : MonoBehaviour
     // Corrección: Métodos deben aceptar 'InputAction.CallbackContext' como parámetro y ser 'void'
     private void StartShooting(InputAction.CallbackContext context)
     {
+
         if (currentWeapon == 0) // Pistola
         {
             ShootSingleShot();
@@ -109,6 +117,7 @@ public class PlayerController : MonoBehaviour
         {
             if (!isShooting)
             {
+
                 isShooting = true;
                 InvokeRepeating(nameof(ShootSingleShot), 0f, 0.1f);
             }
@@ -177,6 +186,7 @@ public class PlayerController : MonoBehaviour
         Vector3 move = cameraTransform.right * input.x + cameraTransform.forward * input.y;
         move.y = 0f;
         controller.Move(move * Time.deltaTime * playerSpeed);
+
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0), rotationSpeed * Time.deltaTime);
 
         // Update character animations
@@ -203,6 +213,8 @@ public class PlayerController : MonoBehaviour
 
     private void ShootSingleShot()
     {
+        SoundManager.Instance.PlaySound3D("Shoot", transform.position);
+
         if (!Input.GetKey(KeyCode.Mouse1)) return;
 
         if (currentWeapon == 1 && currentRifleAmmo > 0) // Rifle with ammo
@@ -287,6 +299,8 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Enemy"))
         {
             PlayerTakeDmg(25);
+            SoundManager.Instance.PlaySound3D("Explosion", transform.position);
+
             Instantiate(explosionParticle, transform.position, Quaternion.identity);
             Debug.Log(GameManager.gameManager._playerHealth.Health);
         }
@@ -295,8 +309,16 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerTakeDmg(int dmg)
     {
+        //GameManager.gameManager._playerHealth.DmgUnit(dmg);
+        //_healthbar.SetHealth(GameManager.gameManager._playerHealth.Health);
         GameManager.gameManager._playerHealth.DmgUnit(dmg);
         _healthbar.SetHealth(GameManager.gameManager._playerHealth.Health);
+
+        if (GameManager.gameManager._playerHealth.Health <= 0)
+        {
+            TriggerGameOver();
+            cameras.SetActive(false);
+        }
     }
 
     private void PlayerHeal(int healing)
@@ -347,4 +369,12 @@ public class PlayerController : MonoBehaviour
         grenadeText.text = $"{currentGrenades}/{maxGrenades}"; // Muestra las granadas disponibles en la interfaz
     }
 
+
+    private void TriggerGameOver()
+    {
+        gameOverPanel.SetActive(true); // Mostrar el panel
+        Time.timeScale = 0f; // Pausar el juego
+        Cursor.lockState = CursorLockMode.None; // Mostrar cursor
+        Cursor.visible = true;
+    }
 }

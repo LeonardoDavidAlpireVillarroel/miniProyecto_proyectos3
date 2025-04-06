@@ -1220,6 +1220,7 @@ GameObject:
   - component: {fileID: 5375580002104138478}
   - component: {fileID: 5346963725620306662}
   - component: {fileID: 5858919452879485918}
+  - component: {fileID: 8072038433586233102}
   m_Layer: 8
   m_Name: Player 1
   m_TagString: Player
@@ -1304,6 +1305,7 @@ MonoBehaviour:
   maxGrenades: 2
   grenadeText: {fileID: 0}
   grenadeCooldownText: {fileID: 0}
+  gameOverPanel: {fileID: 0}
 --- !u!95 &5346963725620306662
 Animator:
   serializedVersion: 7
@@ -1356,6 +1358,18 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &8072038433586233102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3075778927381502281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecea1e6d2547d9a46b68cc3fad338c05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3103275446722379776
 GameObject:
   m_ObjectHideFlags: 0
